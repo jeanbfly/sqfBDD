@@ -1,6 +1,6 @@
 class Expr:
 
-    def __init__(expr):
+    def __init__(self, expr):
 
         self.expr = expr
 

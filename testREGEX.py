@@ -1,7 +1,9 @@
 import re
 
 txt = "@project{\'Personne', 'Age\'}(\'DATA\')"
+print(txt)
 x = re.search("^@project", txt)
+print("@project")
 
 attributs = txt[x.span()[1]:]
 x1 = re.search("^{.*\}", attributs)

@@ -1,6 +1,8 @@
-class Attr:
+import Expr
 
-    def __init__(attr):
+class Attr(Expr.Expr):
+
+    def __init__(self, attr):
 
         if isinstance(attr, str):
             self.value = attr
@@ -8,12 +10,11 @@ class Attr:
             raise TypeError
 
     def __str__(self):
-
-        return f'\'{self.value}\''
+        return self.value
 
 class Rel:
 
-    def __init__(tableName):
+    def __init__(self, tableName):
 
         if isinstance(tableName, str):
             self.value = tableName
@@ -22,9 +23,15 @@ class Rel:
 
 class Condition:
 
-    def __init__(attr1, comparateur, attr2):
+    def __init__(self, attr1, comparateur, attr2):
 
         if isinstance(attr1, Attr) and isinstance(attr2, Attr) and comparateur in ['=', '>', '<', '<>']:
-            pass
+            self.attr1 = attr1
+            self.attr2 = attr2
+            self.comparateur = comparateur
         else:
             raise TypeError
+
+    def __str__(self):
+
+        return f'{self.attr1} {self.comparateur} {self.attr2}'
