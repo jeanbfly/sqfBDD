@@ -1,6 +1,8 @@
-
 class CommandError(Exception):
-    
+    """ 
+        Class for command format Errors 
+        msg -- The specified command
+    """
     def __init__(self, msg):
 
         if isinstance(msg, str):
@@ -14,7 +16,10 @@ class CommandError(Exception):
         return f'\033[93m [E] : CommandError : la commande {self.msg} n\'existe pas'
 
 class ConditionError(Exception):
-
+    """ 
+        Class for condition format Errors 
+        msg -- The specified part of condition
+    """
     def __init__(self, msg):
 
         if isinstance(msg, str):

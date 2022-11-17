@@ -2,7 +2,11 @@ import Expr
 import Tools
 
 class Select(Expr.Expr):
-    
+    """
+        Class representing the Select command
+        condition -- a condition object
+        expr      -- a subRequest/relation, expression object
+    """
     def __init__(self, condition, expr):
 
         if isinstance(condition, Tools.Condition) and isinstance(expr, Expr.Expr):
@@ -16,7 +20,11 @@ class Select(Expr.Expr):
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
 class Project(Expr.Expr):
-
+    """
+        Class representing the Project command
+        condition -- a list of Attributes object
+        expr      -- a subRequest/relation, expression object
+    """
     def __init__(self, listOfAttr, expr):
 
         if isinstance(listOfAttr, list) and isinstance(expr, Expr.Expr):
@@ -34,7 +42,10 @@ class Project(Expr.Expr):
         return f'Proj({str(self.listOfAttr)}, {str(self.expr)})'
 
 class Join(Expr.Expr):
-    
+    """
+        Class representing the Join command
+        expr1, expr2 -- two subRequests/relations, expression object
+    """
     def __init__(self, expr1, expr2):
 
         if isinstance(expr1, Expr.Expr) and isinstance(expr2, Expr.Expr):
@@ -48,7 +59,11 @@ class Join(Expr.Expr):
         return f'{self.expr1} ⋈ {self.expr2}'
 
 class Rename(Expr.Expr):
-    
+    """
+        Class representing the Rename command
+        oldName -- the old name of the column
+        newName -- the new name of the column
+    """
     def __init__(self, oldName, newName, expr):
 
         if isinstance(oldName, Tools.Attr) and isinstance(newName, Tools.Attr) and isinstance(expr, Expr.Expr):
@@ -63,7 +78,10 @@ class Rename(Expr.Expr):
         return f'Rename({self.oldName} -> {self.newName}, {str(self.expr)})'
 
 class Union(Expr.Expr):
-    
+    """
+        Class representing the Union command
+        expr1, expr2 -- two subRequests/relations, expression object
+    """
     def __init__(self, expr1, expr2):
 
         if isinstance(expr1, Expr.Expr) and isinstance(expr2, Expr.Expr):
@@ -77,7 +95,10 @@ class Union(Expr.Expr):
         return f'{self.expr1} U {self.expr2}'
 
 class Difference(Expr.Expr):
-
+    """
+        Class representing the Union command
+        expr1, expr2 -- two subRequests/relations, expression object
+    """
     def __init__(self, expr1, expr2):
 
         if isinstance(expr1, Expr.Expr) and isinstance(expr2, Expr.Expr):
