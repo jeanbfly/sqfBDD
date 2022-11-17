@@ -7,19 +7,10 @@ class Attr(Expr.Expr):
         if isinstance(attr, str):
             self.value = attr
         else:
-            raise TypeError
+            raise TypeError('\033[93m [E] : 1 paramètres nécessaire : 1 attributs/relation')
 
     def __str__(self):
         return self.value
-
-class Rel:
-
-    def __init__(self, tableName):
-
-        if isinstance(tableName, str):
-            self.value = tableName
-        else:
-            raise TypeError
 
 class Condition:
 
@@ -30,7 +21,7 @@ class Condition:
             self.attr2 = attr2
             self.comparateur = comparateur
         else:
-            raise TypeError
+            raise TypeError('\033[93m [E] : 3 paramètres nécessaires : 2 attributs et un comparateur')
 
     def __str__(self):
 
