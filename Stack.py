@@ -1,6 +1,8 @@
 
 class Stack: 
-
+    """
+        Class representing a stack pile
+    """
     def __init__(self): 
         self.elements = [] 
     
@@ -18,7 +20,10 @@ class Stack:
         return len(self.elements) == 0
 
 def balance_check(expression):
-
+    """
+        method to check the correct balance of brackets
+        expression -- a sequence of brackets
+    """
     if len(expression) % 2 != 0:
         return False
     

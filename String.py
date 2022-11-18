@@ -1,5 +1,9 @@
 
 class String:
+    """
+        Class representing a String iterator
+        string -- the string needed to be iterate
+    """
 
     subOpen           =     ['(']
     subClose          =     [')']
