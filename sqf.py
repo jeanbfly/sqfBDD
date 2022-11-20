@@ -1,5 +1,5 @@
 from Tools import *
-import Expr, SPJRUD, Stack
+import SPJRUD, Stack
 import String as s
 import Excpt as e
 
@@ -30,7 +30,7 @@ def findCondition(expr):
         else:
             raise e.ConditionError('comparateur')
 
-        if params[0] != '' or param[1] != '':
+        if params[0] != '' or params[1] != '':
             return condi
         else:
             raise e.ConditionError('nombre d\'attribut conforme')
