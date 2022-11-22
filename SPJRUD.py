@@ -13,7 +13,7 @@ class Select(Expr.Expr):
             self.condition = condition
             self.expr = expr
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaires : une condition et une expression')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaires : une condition et une expression\033[97m')
 
     def __str__(self):
 
@@ -34,7 +34,7 @@ class Project(Expr.Expr):
             self.listOfAttr = listOfAttr
             self.expr = expr
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaires : une liste d\'attributs et une expression')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaires : une liste d\'attributs et une expression\033[97m')
 
     def __str__(self):
 
@@ -52,7 +52,7 @@ class Join(Expr.Expr):
             self.expr1 = expr1
             self.expr2 = expr2
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions\033[97m')
 
     def __str__(self):
 
@@ -71,7 +71,7 @@ class Rename(Expr.Expr):
             self.newName = newName
             self.expr = expr
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : un ancien nom et un nouveau nom')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : un ancien nom et un nouveau nom\033[97m')
 
     def __str__(self):
 
@@ -88,7 +88,7 @@ class Union(Expr.Expr):
             self.expr1 = expr1
             self.expr2 = expr2
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions\033[97m')
 
     def __str__(self):
 
@@ -105,7 +105,7 @@ class Difference(Expr.Expr):
             self.expr1 = expr1
             self.expr2 = expr2
         else:
-            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions')
+            raise TypeError('\033[93m [E] : 2 paramètres nécessaire : 2 expressions\033[97m')
 
     def __str__(self):
 

@@ -23,7 +23,7 @@ class String:
             self.string = string
             self.index = -1
         else:
-            raise TypeError('\033[93m [E] : 1 paramètre nécessaire : 1 string')
+            raise TypeError('\033[93m [E] : 1 paramètre nécessaire : 1 string\033[97m')
 
     def __str__(self):
 

@@ -30,7 +30,7 @@ def findCondition(expr):
         else:
             raise e.ConditionError('comparateur')
 
-        if params[0] != '' or params[1] != '':
+        if params[0] != '' and params[1] != '':
             return condi
         else:
             raise e.ConditionError('nombre d\'attribut conforme')
@@ -80,10 +80,14 @@ def findStrings(expr):
             while currentChar != ':' and currentChar != None:
                 old += currentChar
                 currentChar = next(expr)
+            if currentChar == None:
+                raise e.FormatError(':')
             currentChar = next(expr)
             while currentChar not in s.String.conditionClose and currentChar != None:
                 new += currentChar
                 currentChar = next(expr)
+            if currentChar == None:
+                raise e.FormatError('}')
             currentChar = next(expr)
             return (Attr(old), Attr(new))
 
@@ -97,9 +101,15 @@ def findAttributes(expr):
             while currentChar not in s.String.conditionClose and currentChar != None:
                 res += currentChar
                 currentChar = next(expr)
+            if currentChar == None:
+                raise e.FormatError('}')
             currentChar = next(expr)
 
-            return [Attr(i) for i in res.split(',')]
+            res = [Attr(i) for i in res.split(',')]
+            if '' in res:
+                raise e.FormatError('un attribut')
+            else:
+                return res
 
 def findSubRequest(expr):
 
@@ -165,9 +175,20 @@ def evalue(expr):
 
 if __name__ == '__main__':
 
-    entry = input('sqf >> ')
+    indicator = 'sqf >> '
+    entry = input(indicator)
 
     while entry != '@exit':
-
-        print(evalue(s.String(entry)))
-        entry = input('sqf >> ')
+        try:
+            if entry == '':
+                pass
+            elif len(entry.split()) != 0 and entry.split()[0] == '@use':
+                if len(entry.split()) == 2:
+                    indicator = f'sqf[{entry.split()[1]}] >> '
+                else:
+                    raise ValueError(f'\033[93m [E] : ArgumentError : Nom de la table manquant\033[97m')
+            else:
+                print(evalue(s.String(entry)))
+        except Exception as e:
+                print(e)
+        entry = input(indicator)

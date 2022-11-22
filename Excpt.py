@@ -9,11 +9,11 @@ class CommandError(Exception):
             self.msg = msg
 
         else:
-            raise TypeError('\033[93m [E] : le message d\'erreur n\'est pas un string')
+            raise TypeError('\033[93m [E] : le message d\'erreur n\'est pas un string\033[97m')
 
     def __str__(self):
 
-        return f'\033[93m [E] : CommandError : la commande {self.msg} n\'existe pas'
+        return f'\033[93m [E] : CommandError : la commande {self.msg} n\'existe pas\033[97m'
 
 class ConditionError(Exception):
     """ 
@@ -25,8 +25,24 @@ class ConditionError(Exception):
         if isinstance(msg, str):
             self.msg = msg
         else:
-            raise TypeError('\033[93m [E] : le message d\'erreur n\'est pas un string')
+            raise TypeError('\033[93m [E] : le message d\'erreur n\'est pas un string\033[97m')
 
     def __str__(self):
 
-        return f'\033[93m [E] : CommandError : la condition ne possède pas de {self.msg}'
+        return f'\033[93m [E] : ConditionError : la condition ne possède pas de {self.msg}\033[97m'
+
+class FormatError(Exception):
+    """ 
+        Class for format Errors 
+        msg -- The specified part
+    """
+    def __init__(self, msg):
+
+        if isinstance(msg, str):
+            self.msg = msg
+        else:
+            raise TypeError('\033[93m [E] : le message d\'erreur n\'est pas un string\033[97m')
+
+    def __str__(self):
+        
+        return f'\033[93m [E] : FormatError : {self.msg} est manquant\033[97m'
