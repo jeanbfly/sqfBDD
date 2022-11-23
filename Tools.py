@@ -21,9 +21,12 @@ class Condition:
         attr1, attr2 -- 2 attributes objects
         comparateur  -- a string comparator
     """
+
+    comparators = ['=', '>', '<', '<>', '<=', '>=']
+
     def __init__(self, attr1, comparateur, attr2):
 
-        if isinstance(attr1, Attr) and isinstance(attr2, Attr) and comparateur in ['=', '>', '<', '<>', '<=', '>=']:
+        if isinstance(attr1, Attr) and isinstance(attr2, Attr) and comparateur in Condition.comparators:
             self.attr1 = attr1
             self.attr2 = attr2
             self.comparateur = comparateur

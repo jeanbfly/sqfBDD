@@ -15,21 +15,11 @@ def findCondition(expr):
         currentChar = next(expr)
 
         condi = None
-        if res.find('=') != -1:
-            params = res.split('=')
-            condi = Condition(Attr(params[0]), '=', Attr(params[1]))
-        elif res.find('<>') != -1:
-            params = res.split('<>')
-            condi = Condition(Attr(params[0]), '<>', Attr(params[1]))
-        elif res.find('<') != -1:
-            params = res.split('<')
-            condi = Condition(Attr(params[0]), '<', Attr(params[1]))
-        elif res.find('>') != -1:
-            params = res.split('>')
-            condi = Condition(Attr(params[0]), '>', Attr(params[1]))
-        else:
-            raise e.ConditionError('comparateur')
 
+        for comp in Condition.comparators:
+            if res.find(comp) != -1:
+                params = res.split(comp)
+                condi = Condition(Attr(params[0]), comp, Attr(params[1]))
         if params[0] != '' and params[1] != '':
             return condi
         else:
