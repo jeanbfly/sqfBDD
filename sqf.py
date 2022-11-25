@@ -3,6 +3,8 @@ import SPJRUD, Stack
 import String as s
 import Excpt as e
 
+import sqlite3
+
 def findCondition(expr):
 
     currentChar = next(expr)
