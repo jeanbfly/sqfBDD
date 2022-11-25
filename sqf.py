@@ -14,8 +14,11 @@ def findCondition(expr):
             currentChar = next(expr)
         currentChar = next(expr)
 
-        condi = None
+        if res == '':
+            raise e.ConditonError('d\'arguments')
 
+        condi = None
+        params = None
         for comp in Condition.comparators:
             if res.find(comp) != -1:
                 params = res.split(comp)
@@ -53,9 +56,15 @@ def findSplit(expr):
 
     currentChar = next(expr)
 
+    if left == '':
+        raise e.FormatError('l\'expression gauche')
+
     while currentChar != None:
         right += currentChar
         currentChar = next(expr)
+
+    if right == '':
+        raise e.FormatError('l\'expression droite')
 
     return (s.String(left), s.String(right[:-1]))
 
@@ -179,6 +188,6 @@ if __name__ == '__main__':
                     raise ValueError(f'\033[93m [E] : ArgumentError : Nom de la table manquant\033[97m')
             else:
                 print(evalue(s.String(entry)))
-        except Exception as e:
-                print(e)
+        except Exception as o:
+                print(o)
         entry = input(indicator)
