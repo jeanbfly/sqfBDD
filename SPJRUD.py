@@ -19,6 +19,10 @@ class Select(Expr.Expr):
 
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
+    def toSQL(self):
+
+        return f'SELECT * FROM {self.expr} WHERE {self.condition}'
+
 class Project(Expr.Expr):
     """
         Class representing the Project command
@@ -41,6 +45,10 @@ class Project(Expr.Expr):
         self.listOfAttr = [str(i) for i in self.listOfAttr]
         return f'Proj({str(self.listOfAttr)}, {str(self.expr)})'
 
+    def toSQL(self):
+
+        return f'SELECT {','.join(self.listOfAttr)} FROM {self.expr}'
+
 class Join(Expr.Expr):
     """
         Class representing the Join command
@@ -57,6 +65,10 @@ class Join(Expr.Expr):
     def __str__(self):
 
         return f'{self.expr1} ⋈ {self.expr2}'
+
+    def toSQL(self):
+
+        return f'SELECT * FROM {self.expr1} INNER JOIN {self.expr2} ON {self.expr1.getAttributes()} = {self.expr2.getAttributes()}'
 
 class Rename(Expr.Expr):
     """
@@ -77,6 +89,10 @@ class Rename(Expr.Expr):
 
         return f'Rename({self.oldName} -> {self.newName}, {str(self.expr)})'
 
+    def toSQL(self):
+
+        return f'ALTER TABLE {self.expr} RENAME COLUMN {self.oldName} TO {self.newName}'
+
 class Union(Expr.Expr):
     """
         Class representing the Union command
@@ -93,6 +109,10 @@ class Union(Expr.Expr):
     def __str__(self):
 
         return f'{self.expr1} U {self.expr2}'
+
+    def toSQL(self):
+
+        return f'{self.expr1} UNION {self.expr2}'
 
 class Difference(Expr.Expr):
     """
