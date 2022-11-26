@@ -46,3 +46,16 @@ class FormatError(Exception):
     def __str__(self):
         
         return f'\033[93m [E] : FormatError : {self.msg} est manquant\033[97m'
+
+class InitError(Exception):
+    """
+        class
+        msg
+    """
+    def __init__(self, msg):
+
+        self.msg = msg
+
+    def __str__(self):
+
+        return f'\033[93m [E] : InitError : {self.msg} \033[97m'
