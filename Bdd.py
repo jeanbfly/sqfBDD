@@ -13,7 +13,7 @@ class Bdd:
         try:
             self.c.execute(f'CREATE TABLE {nameTable} {listOfAttributes}')
         except sqlite3.OperationalError:
-            raise Excpt.InitError('Table déjà crée')
+            raise Excpt.InitError('Table déjà créée')
         self.conn.commit()
 
     def getSchema(self, nameTable):
@@ -36,10 +36,11 @@ class Bdd:
         schema = self.getSchema(nameTable)
         table = self.getTable(nameTable)
 
-        for i in self.getTable(nameTable):
+        for i in table:
             for j in range(len(i)):
                 if len(str(i[j])) > maxi[j]:
                     maxi[j] = len(str(i[j]))
+
         for i in range(len(schema)):
             first, name, *other = schema[i]
             if len(name) > maxi[i]:
@@ -74,6 +75,7 @@ class Bdd:
 
         self.c.execute(sqlExpr)
         self.conn.commit()
+        return self.c.fetchall()
 
     def __str__(self):
 
@@ -100,8 +102,3 @@ if __name__ == '__main__':
     with Bdd() as db:
 
         print(db)
-        #print(db.printTable('stocks'))
-        #print(db.printTable('test'))
-        #print(db.getTable('stocks'))
-        #print(db.getTables())
-        #print(db.getSchema('stocks'))
