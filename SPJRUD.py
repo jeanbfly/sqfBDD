@@ -47,7 +47,7 @@ class Project(Expr.Expr):
 
     def toSQL(self):
 
-        return f'SELECT {','.join(self.listOfAttr)} FROM {self.expr}'
+        return f'SELECT {",".join(self.listOfAttr)} FROM {self.expr}'
 
 class Join(Expr.Expr):
     """

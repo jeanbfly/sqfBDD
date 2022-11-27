@@ -190,6 +190,13 @@ if __name__ == '__main__':
                     raise ValueError(f'\033[93m [E] : ArgumentError : Nom de la table manquant\033[97m')
             else:
                 print(evalue(s.String(entry)))
+                """
+                validation()
+                if true :
+                    with Bdd() as db:
+                        execute
+                enregistrer ?
+                """
         except Exception as o:
                 print(o)
         entry = input(indicator)
