@@ -70,7 +70,7 @@ def findSplit(expr):
         right += currentChar
         currentChar = next(expr)
 
-    if right == '' or right in String.subClose:
+    if right == '' or right in s.String.subClose:
         raise e.FormatError('l\'expression droite')
 
     return (s.String(left), s.String(right[:-1]))
@@ -86,12 +86,16 @@ def findStrings(expr):
             while currentChar != ':' and currentChar != None:
                 old += currentChar
                 currentChar = next(expr)
+            if old == '':
+                raise e.FormatError('l\'ancien nom')
             if currentChar == None:
-                raise e.FormatError(':')
+                raise e.FormatError('le séparateur \':\'')
             currentChar = next(expr)
             while currentChar not in s.String.conditionClose and currentChar != None:
                 new += currentChar
                 currentChar = next(expr)
+            if new == '':
+                raise e.FormatError('le nouveau nom')
             if currentChar == None:
                 raise e.FormatError('}')
             currentChar = next(expr)
@@ -111,11 +115,13 @@ def findAttributes(expr):
                 raise e.FormatError('}')
             currentChar = next(expr)
 
-            res = [Attr(i) for i in res.split(',')]
             if '' in res:
                 raise e.FormatError('un attribut')
             else:
+                res = [Attr(i) for i in res.split(',')]
                 return res
+        currentChar = next(expr)
+    raise e.FormatError('la liste d\'attributs')
 
 def findSubRequest(expr):
 
@@ -139,9 +145,12 @@ def findSubRequest(expr):
                     stc.pop()
                 res += currentChar
                 currentChar = next(expr)
+            if res[:-1] == '':
+                raise e.FormatError('la relation')
             return s.String(res[:-1])
         else:
             currentChar = next(expr)
+    raise e.FormatError('la relation')
 
 def evalue(expr):
 
