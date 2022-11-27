@@ -17,7 +17,7 @@ def findCondition(expr):
         currentChar = next(expr)
 
         if res == '':
-            raise e.ConditonError('d\'arguments')
+            raise e.ConditionError('d\'arguments')
 
         condi = None
         params = None
@@ -25,7 +25,7 @@ def findCondition(expr):
             if res.find(comp) != -1:
                 params = res.split(comp)
                 condi = Condition(Attr(params[0]), comp, Attr(params[1]))
-        if params[0] != '' and params[1] != '':
+        if params != None and params[0] != '' and params[1] != '':
             return condi
         else:
             raise e.ConditionError('nombre d\'attribut conforme')
@@ -48,6 +48,8 @@ def findSplit(expr):
             leftStc.push(currentChar)
             ignore = True
         elif currentChar in s.String.subClose:
+            if leftStc.is_empty():
+                raise e.FormatError('un des caractères')
             leftStc.pop()
         elif leftStc.is_empty():
             ignore = False
@@ -55,6 +57,9 @@ def findSplit(expr):
             break
         left += currentChar
         currentChar = next(expr)
+
+    if currentChar == None:
+        raise e.FormatError('un des arguments')
 
     currentChar = next(expr)
 
@@ -65,7 +70,7 @@ def findSplit(expr):
         right += currentChar
         currentChar = next(expr)
 
-    if right == '':
+    if right == '' or right in String.subClose:
         raise e.FormatError('l\'expression droite')
 
     return (s.String(left), s.String(right[:-1]))
