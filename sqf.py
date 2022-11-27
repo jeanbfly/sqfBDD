@@ -70,7 +70,7 @@ def findSplit(expr):
         right += currentChar
         currentChar = next(expr)
 
-    if right == '' or right in String.subClose:
+    if right == '' or right in s.String.subClose:
         raise e.FormatError('l\'expression droite')
 
     return (s.String(left), s.String(right[:-1]))
