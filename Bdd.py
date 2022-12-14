@@ -79,13 +79,7 @@ class Bdd:
 
     def __str__(self):
 
-        res = ''
-        for i in self.getTables():
-            res += self.printTable(i)
-            res += '\n'
-
-        return res
-        return [f'{self.printTable(i)}' for i in self.getTables()].join('\n')
+        return "\n".join([f'{self.printTable(i)}' for i in self.getTables()])
 
     def __enter__(self):
 
