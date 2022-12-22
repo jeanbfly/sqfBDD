@@ -1,4 +1,4 @@
-import Expr
+import Expr, Bdd
 
 class Attr(Expr.Expr):
     """
@@ -14,6 +14,15 @@ class Attr(Expr.Expr):
 
     def __str__(self):
         return self.value
+
+    def toSQL(self):
+
+        return self.value
+
+    def validate(self):
+
+        with Bdd.Bdd() as bd:
+            bd.getSchema
 
 class Condition:
     """

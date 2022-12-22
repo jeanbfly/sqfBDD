@@ -10,7 +10,3 @@ class Expr:
 
     def toSQL(self):
         return self
-
-    #does nothing as a regular expression doesnt need to be validated
-    def validate():
-        pass

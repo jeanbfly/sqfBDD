@@ -185,9 +185,6 @@ def evalue(expr):
                     expression = SPJRUD.Difference(evalue(left), evalue(right))
                 case _:
                     raise e.CommandError(res)
-            expression.validate()
-            ##if validate did not raise any exception : expression is valid
-            return expression
         else:
             res += currentChar
             currentChar = next(expr)
@@ -203,12 +200,7 @@ if __name__ == '__main__':
             if entry == '':
                 pass
             else:
-
-                try :
-                    print(evalue(s.String(entry)))
-                except e.ValidationError as ex:
-                    print(ex.msg)
-                    
+                print(evalue(s.String(entry)))
                 """
                 validation()
                 if true :

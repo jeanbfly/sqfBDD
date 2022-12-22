@@ -1,5 +1,5 @@
 import Expr
-import Tools
+import Tools, Bdd
 
 class Select(Expr.Expr):
     """
@@ -20,9 +20,8 @@ class Select(Expr.Expr):
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
+        with Bdd.Bdd() as bd:
+            pass
 
     def toSQL(self):
         #self.expr.toSQL() ???

@@ -95,4 +95,4 @@ if __name__ == '__main__':
 
     with Bdd() as db:
 
-        print(db)
+        print(db.getSchema('test'))
