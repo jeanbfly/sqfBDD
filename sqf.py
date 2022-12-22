@@ -2,6 +2,7 @@ from Tools import *
 import SPJRUD, Stack
 import String as s
 import Excpt as e
+import Bdd
 
 import sqlite3
 
@@ -197,11 +198,6 @@ if __name__ == '__main__':
         try:
             if entry == '':
                 pass
-            elif len(entry.split()) != 0 and entry.split()[0] == '@use':
-                if len(entry.split()) == 2:
-                    indicator = f'sqf[{entry.split()[1]}] >> '
-                else:
-                    raise ValueError(f'\033[93m [E] : ArgumentError : Nom de la table manquant\033[97m')
             else:
                 print(evalue(s.String(entry)))
                 """
@@ -211,6 +207,20 @@ if __name__ == '__main__':
                         execute
                 enregistrer ?
                 """
+                with Bdd.Bdd() as bd:
+                    attributs = ''
+                    values = ''
+                    while True:
+                        choice = input('Voulez-vous enregistrer ? Y-N : ')
+                        if choice in ['y', 'Y']:
+                            name = input('Quel nom voulez-vous donner à la table : ')
+                            bd.createTable(name, attributs)
+                            bd.insert(name, values)
+                            break
+                        elif choice in ['n', 'N']:
+                            break
+                        else:
+                            continue
         except Exception as o:
-                print(o)
+            print(o)
         entry = input(indicator)
