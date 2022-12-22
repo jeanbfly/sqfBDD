@@ -59,3 +59,12 @@ class InitError(Exception):
     def __str__(self):
 
         return f'\033[93m [E] : InitError : {self.msg} \033[97m'
+
+class ValidationError(Exception):
+    def __init__(self, msg):
+
+        self.msg = msg
+
+    def __str__(self):
+
+        return f"\033[93m [E] : Validation Error : {self.msg} \033[97m"
