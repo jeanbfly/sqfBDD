@@ -7,6 +7,3 @@ class Expr:
     def __str__(self):
 
         return str(self.expr)
-
-    def toSQL(self):
-        return self

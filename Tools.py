@@ -5,6 +5,8 @@ class Attr(Expr.Expr):
         Class representing a basic attribute/relation
         attr -- a str object
     """
+    allCopies = []
+
     def __init__(self, attr):
 
         if isinstance(attr, str):
@@ -22,8 +24,9 @@ class Attr(Expr.Expr):
     def validate(self):
 
         with Bdd.Bdd() as bd:
-            bd.getSchema
-
+            Attr.allCopies.append(bd.copyTable(self.value, f'temp{len(Attr.allCopies)+1}'))
+            return [(i[1], i[2]) for i in bd.getSchema(Attr.allCopies[-1])]
+        
 class Condition:
     """
         Class representing a condition

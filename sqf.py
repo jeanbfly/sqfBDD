@@ -115,12 +115,9 @@ def findAttributes(expr):
             if currentChar == None:
                 raise e.FormatError('}')
             currentChar = next(expr)
-
-            if '' in res:
-                raise e.FormatError('un attribut')
-            else:
-                res = [Attr(i) for i in res.split(',')]
-                return res
+          
+            res = [Attr(i) for i in res.split(',')]
+            return res
         currentChar = next(expr)
     raise e.FormatError('la liste d\'attributs')
 
@@ -168,7 +165,6 @@ def evalue(expr):
             match res:
                 case '@select':
                     expression = SPJRUD.Select(findCondition(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
-                    
                 case '@project':
                     expression = SPJRUD.Project(findAttributes(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
                 case '@join':
@@ -185,6 +181,7 @@ def evalue(expr):
                     expression = SPJRUD.Difference(evalue(left), evalue(right))
                 case _:
                     raise e.CommandError(res)
+            return expression
         else:
             res += currentChar
             currentChar = next(expr)
@@ -196,32 +193,36 @@ if __name__ == '__main__':
     entry = input(indicator)
 
     while entry != '@exit':
-        try:
-            if entry == '':
-                pass
-            else:
-                print(evalue(s.String(entry)))
-                """
-                validation()
-                if true :
-                    with Bdd() as db:
-                        execute
-                enregistrer ?
-                """
+        if entry == '':
+            pass
+        else:
+            try:
+                obj = evalue(s.String(entry))
+                print(obj)
+                schema = obj.validate()
+                print(schema)
+
                 with Bdd.Bdd() as bd:
+                    a = obj.toSQL()
+                    print('to sql : ', a)
+                    res = bd.execute(a)
+                    print('res : ', res)
                     attributs = ''
                     values = ''
                     while True:
                         choice = input('Voulez-vous enregistrer ? Y-N : ')
                         if choice in ['y', 'Y']:
                             name = input('Quel nom voulez-vous donner à la table : ')
-                            bd.createTable(name, attributs)
-                            bd.insert(name, values)
+                            
+                            bd.createTable(name, schema)
+                            for i in res:
+                                bd.insert(name, i)
                             break
                         elif choice in ['n', 'N']:
-                            break
+                            for i in Attr.allCopies:
+                                bd.dropTable(i)
                         else:
                             continue
-        except Exception as o:
-            print(o)
+            except Exception as o:
+                print(o.with_traceback())
         entry = input(indicator)

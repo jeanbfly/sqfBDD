@@ -1,5 +1,6 @@
 import Expr
 import Tools, Bdd
+import Excpt as e
 
 class Select(Expr.Expr):
     """
@@ -20,8 +21,8 @@ class Select(Expr.Expr):
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
     def validate(self):
-        with Bdd.Bdd() as bd:
-            pass
+        
+        return self.expr.validate()
 
     def toSQL(self):
         #self.expr.toSQL() ???
@@ -50,13 +51,22 @@ class Project(Expr.Expr):
         return f'Proj({str(self.listOfAttr)}, {str(self.expr)})'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
+        
+        exprSchema = self.expr.validate()
+        reduceSchema = [i[0] for i in exprSchema]
+        
+        res = []
+        for attr in self.listOfAttr:
+            if attr not in reduceSchema:
+                print("ok", attr, reduceSchema)
+                raise e.AttributeNameError('j')
+            else:
+                res.append(exprSchema[reduceSchema.index(attr)])
+        return res
 
     def toSQL(self):
 
-        return f'SELECT {",".join(self.listOfAttr)} FROM {self.expr}'
+        return f'SELECT {",".join(self.listOfAttr)} FROM {self.expr.toSQL()}'
 
 class Join(Expr.Expr):
     """
@@ -104,9 +114,23 @@ class Rename(Expr.Expr):
 
         return f'Rename({self.oldName} -> {self.newName}, {str(self.expr)})'
 
+    def validate(self):
+
+        exprSchema = self.expr.validate()
+        reduceSchema = [i[0] for i in exprSchema]
+        
+        if not str(self.oldName) in reduceSchema:
+            print(self.oldName, reduceSchema)
+            raise e.AttributeNameError('j')
+        
+        index = reduceSchema.index(str(self.oldName))
+        exprSchema[index] = (self.newName, exprSchema[index][1])
+
+        return exprSchema
+
     def toSQL(self):
 
-        return f'ALTER TABLE {self.expr} RENAME COLUMN {self.oldName} TO {self.newName}'
+        return f'ALTER TABLE {self.expr.toSQL()} RENAME COLUMN {str(self.oldName)} TO {str(self.newName)}'
 
 class Union(Expr.Expr):
     """

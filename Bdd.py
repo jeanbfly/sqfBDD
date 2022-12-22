@@ -16,11 +16,20 @@ class Bdd:
             raise Excpt.InitError('Table déjà créée')
         self.conn.commit()
 
+    def dropTable(self, nameTable):
+
+        self.c.execute(f'DROP TABLE {nameTable}')
+        self.conn.commit()
+
+    def copyTable(self, nameTable, newNameTable):
+
+        self.c.execute(f'CREATE TABLE {newNameTable} AS SELECT * FROM {nameTable}')
+        self.conn.commit()
+        return newNameTable
+
     def getSchema(self, nameTable):
 
-        self.execute(f'PRAGMA table_info(\'{nameTable}\')')
-        self.conn.commit()
-        return self.c.fetchall()
+        return self.execute(f'PRAGMA table_info(\'{nameTable}\')')
 
     def getTable(self, nameTable):
 
@@ -94,5 +103,5 @@ class Bdd:
 if __name__ == '__main__':
 
     with Bdd() as db:
-
-        print(db.getSchema('test'))
+        
+        print(db.getSchema('stock'))
