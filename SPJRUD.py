@@ -19,8 +19,13 @@ class Select(Expr.Expr):
 
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
-    def toSQL(self):
+    def validate(self):
+        if False:
+            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+        self.expr1.validate()
 
+    def toSQL(self):
+        #self.expr.toSQL() ???
         return f'SELECT * FROM {self.expr} WHERE {self.condition}'
 
 class Project(Expr.Expr):
@@ -45,6 +50,11 @@ class Project(Expr.Expr):
         self.listOfAttr = [str(i) for i in self.listOfAttr]
         return f'Proj({str(self.listOfAttr)}, {str(self.expr)})'
 
+    def validate(self):
+        if False:
+            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+        self.expr1.validate()
+
     def toSQL(self):
 
         return f'SELECT {",".join(self.listOfAttr)} FROM {self.expr}'
@@ -66,9 +76,15 @@ class Join(Expr.Expr):
 
         return f'{self.expr1} ⋈ {self.expr2}'
 
+    def validate(self):
+        if False:
+            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+        self.expr1.validate()
+        self.expr2.validate()
+
     def toSQL(self):
 
-        return f'SELECT * FROM {self.expr1} INNER JOIN {self.expr2} ON {self.expr1.getAttributes()} = {self.expr2.getAttributes()}'
+        return f'SELECT * FROM {self.expr1} NATURAL JOIN {self.expr2}'
 
 class Rename(Expr.Expr):
     """
@@ -110,6 +126,12 @@ class Union(Expr.Expr):
 
         return f'{self.expr1} U {self.expr2}'
 
+    def validate(self):
+        if False:
+            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+        self.expr1.validate()
+        self.expr2.validate()
+
     def toSQL(self):
 
         return f'{self.expr1} UNION {self.expr2}'
@@ -130,3 +152,13 @@ class Difference(Expr.Expr):
     def __str__(self):
 
         return f'{self.expr1} - {self.expr2}'
+
+    def validate(self):
+        if False:
+            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+        self.expr1.validate()
+        self.expr2.validate()
+
+    def toSQL(self):
+
+        return f'SELECT * FROM {self.expr1} MINUS SELECT * FROM {self.expr2}'

@@ -167,23 +167,27 @@ def evalue(expr):
 
             match res:
                 case '@select':
-                    return SPJRUD.Select(findCondition(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Select(findCondition(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
+                    
                 case '@project':
-                    return SPJRUD.Project(findAttributes(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Project(findAttributes(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
                 case '@join':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Join(evalue(left), evalue(right))
+                    expression = SPJRUD.Join(evalue(left), evalue(right))
                 case '@rename':
                     old, new = findStrings(expr.toFinal())
-                    return SPJRUD.Rename(old, new, evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Rename(old, new, evalue(findSubRequest(expr.toFinal())))
                 case '@union':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Union(evalue(left), evalue(right))
+                    expression = SPJRUD.Union(evalue(left), evalue(right))
                 case '@diff':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Difference(evalue(left), evalue(right))
+                    expression = SPJRUD.Difference(evalue(left), evalue(right))
                 case _:
                     raise e.CommandError(res)
+            expression.validate()
+            ##if validate did not raise any exception : expression is valid
+            return expression
         else:
             res += currentChar
             currentChar = next(expr)
@@ -199,7 +203,12 @@ if __name__ == '__main__':
             if entry == '':
                 pass
             else:
-                print(evalue(s.String(entry)))
+
+                try :
+                    print(evalue(s.String(entry)))
+                except e.ValidationError as ex:
+                    print(ex.msg)
+                    
                 """
                 validation()
                 if true :
