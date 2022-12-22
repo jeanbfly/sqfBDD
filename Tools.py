@@ -36,3 +36,7 @@ class Condition:
     def __str__(self):
 
         return f'{self.attr1} {self.comparateur} {self.attr2}'
+
+    def toSQL(self):
+
+        return self.__str__()
