@@ -1,10 +1,12 @@
-import Expr
+import Expr, Bdd
 
 class Attr(Expr.Expr):
     """
         Class representing a basic attribute/relation
         attr -- a str object
     """
+    allCopies = []
+
     def __init__(self, attr):
 
         if isinstance(attr, str):
@@ -15,6 +17,16 @@ class Attr(Expr.Expr):
     def __str__(self):
         return self.value
 
+    def toSQL(self):
+
+        return self.value
+
+    def validate(self):
+
+        with Bdd.Bdd() as bd:
+            Attr.allCopies.append(bd.copyTable(self.value, f'temp{len(Attr.allCopies)+1}'))
+            return [(i[1], i[2]) for i in bd.getSchema(Attr.allCopies[-1])]
+        
 class Condition:
     """
         Class representing a condition

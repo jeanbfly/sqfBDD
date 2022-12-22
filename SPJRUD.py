@@ -1,5 +1,6 @@
 import Expr
-import Tools
+import Tools, Bdd
+import Excpt as e
 
 class Select(Expr.Expr):
     """
@@ -20,13 +21,11 @@ class Select(Expr.Expr):
         return f'Select({str(self.condition)}, {str(self.expr)})'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
+        
+        return self.expr.validate()
 
     def toSQL(self):
-        #self.expr.toSQL() ???
-        return f'SELECT * FROM {self.expr} WHERE {self.condition}'
+        return f'SELECT * FROM ({self.expr.toSQL()}) WHERE {self.condition}'
 
 class Project(Expr.Expr):
     """
@@ -51,13 +50,20 @@ class Project(Expr.Expr):
         return f'Proj({str(self.listOfAttr)}, {str(self.expr)})'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
+        
+        exprSchema = self.expr.validate()
+        reduceSchema = [i[0] for i in exprSchema]
+        res = []
+        for attr in self.listOfAttr:
+            if attr not in reduceSchema:
+                raise e.AttributeNameError('j')
+            else:
+                res.append(exprSchema[reduceSchema.index(attr)])
+        return res
 
     def toSQL(self):
 
-        return f'SELECT {",".join(self.listOfAttr)} FROM {self.expr}'
+        return f'SELECT {",".join(self.listOfAttr)} FROM ({self.expr.toSQL()})'
 
 class Join(Expr.Expr):
     """
@@ -77,14 +83,24 @@ class Join(Expr.Expr):
         return f'{self.expr1} ⋈ {self.expr2}'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
-        self.expr2.validate()
+        exprSchema1 = self.expr1.validate()
+        exprSchema2 = self.expr2.validate()
+        commonAttributes = []
+
+        for attribut in exprSchema1:
+            if attribut in exprSchema2:
+                commonAttributes.append(attribut)
+                exprSchema2.remove(attribut)
+
+        if len(commonAttributes) == 0:
+            raise e.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+
+        else:
+            return exprSchema1 + exprSchema2
 
     def toSQL(self):
 
-        return f'SELECT * FROM {self.expr1} NATURAL JOIN {self.expr2}'
+        return f'SELECT * FROM ({self.expr1.toSQL()}) NATURAL JOIN ({self.expr2.toSQL()})'
 
 class Rename(Expr.Expr):
     """
@@ -105,9 +121,22 @@ class Rename(Expr.Expr):
 
         return f'Rename({self.oldName} -> {self.newName}, {str(self.expr)})'
 
+    def validate(self):
+
+        exprSchema = self.expr.validate()
+        reduceSchema = [i[0] for i in exprSchema]
+        
+        if not str(self.oldName) in reduceSchema:
+            raise e.AttributeNameError('j')
+        
+        index = reduceSchema.index(str(self.oldName))
+        exprSchema[index] = (self.newName, exprSchema[index][1])
+
+        return exprSchema
+
     def toSQL(self):
 
-        return f'ALTER TABLE {self.expr} RENAME COLUMN {self.oldName} TO {self.newName}'
+        return f'ALTER TABLE ({self.expr.toSQL()}) RENAME COLUMN {str(self.oldName)} TO {str(self.newName)}'
 
 class Union(Expr.Expr):
     """
@@ -127,14 +156,18 @@ class Union(Expr.Expr):
         return f'{self.expr1} U {self.expr2}'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
-        self.expr2.validate()
+
+        exprSchema1 =  self.expr1.validate()
+        exprSchema2 = self.expr2.validate()
+
+        if exprSchema1 != exprSchema2:
+            raise e.AttributeNameError('j')
+        
+        return exprSchema1
 
     def toSQL(self):
 
-        return f'{self.expr1} UNION {self.expr2}'
+        return f'SELECT * FROM ({self.expr1.toSQL()}) UNION SELECT * FROM ({self.expr2.toSQL()})'
 
 class Difference(Expr.Expr):
     """
@@ -154,11 +187,15 @@ class Difference(Expr.Expr):
         return f'{self.expr1} - {self.expr2}'
 
     def validate(self):
-        if False:
-            raise Excpt.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
-        self.expr1.validate()
-        self.expr2.validate()
+        
+        exprSchema1 =  self.expr1.validate()
+        exprSchema2 = self.expr2.validate()
+
+        if exprSchema1 != exprSchema2:
+            raise e.AttributeNameError('j')
+        
+        return exprSchema1
 
     def toSQL(self):
 
-        return f'SELECT * FROM {self.expr1} MINUS SELECT * FROM {self.expr2}'
+        return f'SELECT * FROM ({self.expr1.toSQL()}) EXCEPT SELECT * FROM ({self.expr2.toSQL()})'
