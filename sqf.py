@@ -189,38 +189,65 @@ def evalue(expr):
 
 if __name__ == '__main__':
 
+    with Bdd.Bdd() as db:
+        for i in db.getTables():
+            if 'temp' in i:
+                db.dropTable(i)
+            if 'table3' in i:
+                db.dropTable(i)
+
     indicator = 'sqf >> '
     entry = input(indicator)
 
     while entry != '@exit':
         if entry == '':
             pass
+        elif entry == '@print':
+            with Bdd.Bdd() as db:
+                print(db)
         else:
             try:
                 obj = evalue(s.String(entry))
-                print(obj)
+                print('To SPJRUD :', obj)
                 schema = obj.validate()
-                print(schema)
 
                 with Bdd.Bdd() as bd:
                     a = obj.toSQL()
-                    print('to sql : ', a)
+                    print('To sql :', a)
                     res = bd.execute(a)
-                    print('res : ', res)
-                    attributs = ''
+                    print(res)
+                    attributs = '('
                     values = ''
                     while True:
-                        choice = input('Voulez-vous enregistrer ? Y-N : ')
-                        if choice in ['y', 'Y']:
+                        choice = input('Voulez-vous enregistrer ? Y-N : ').strip()
+                        if choice.upper() == 'Y':
                             name = input('Quel nom voulez-vous donner à la table : ')
+                            for index in range(len(schema)-1):
+                                attributs += f'{schema[index][0]} {schema[index][1]}, '
+                            attributs += f'{schema[-1][0]} {schema[-1][1]})'
+                            print(attributs)
+                            bd.createTable(name, attributs)
                             
-                            bd.createTable(name, schema)
-                            for i in res:
-                                bd.insert(name, i)
+                            for values in res:
+                                insertion = '('
+                                for column in range(len(values)-1):
+                                    if schema[column][1] == 'TEXT':
+                                        insertion += f'"{values[column]}", '
+                                    else:
+                                        insertion += f'{values[column]}, '
+                                if schema[-1][1] == 'TEXT':
+                                    insertion += f'"{values[-1]}")'
+                                else:
+                                    insertion += f'{values[-1]})'
+                                print(insertion)
+                                bd.insert(name, insertion)
+                            for copieTable in Attr.allCopies:
+                                bd.dropTable(copieTable)
                             break
-                        elif choice in ['n', 'N']:
+                        elif choice.upper() == 'N':
                             for i in Attr.allCopies:
                                 bd.dropTable(i)
+                            break
                         else:
                             continue
             except Exception as o:

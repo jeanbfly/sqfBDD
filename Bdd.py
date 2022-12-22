@@ -104,4 +104,11 @@ if __name__ == '__main__':
 
     with Bdd() as db:
         
-        print(db.getSchema('stock'))
+        print(db.dropTable('table1'))
+        print(db.dropTable('table2'))
+        print(db.createTable('table1', '(ID INT, AGE INT, NAME TEXT)'))
+        print(db.createTable('table2', '(ID INT, AGE INT, NAME TEXT)'))
+        print(db.insert('table1', '(1, 20, "Antoine")'))
+        print(db.insert('table1', '(2, 30, "Jean")'))
+        print(db.insert('table2', '(1, 20, "Antoine")'))
+        print(db.insert('table2', '(2, 34, "salutre")'))
