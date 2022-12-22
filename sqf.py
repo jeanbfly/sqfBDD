@@ -2,6 +2,7 @@ from Tools import *
 import SPJRUD, Stack
 import String as s
 import Excpt as e
+import Bdd
 
 import sqlite3
 
@@ -114,12 +115,9 @@ def findAttributes(expr):
             if currentChar == None:
                 raise e.FormatError('}')
             currentChar = next(expr)
-
-            if '' in res:
-                raise e.FormatError('un attribut')
-            else:
-                res = [Attr(i) for i in res.split(',')]
-                return res
+          
+            res = [Attr(i) for i in res.split(',')]
+            return res
         currentChar = next(expr)
     raise e.FormatError('la liste d\'attributs')
 
@@ -166,23 +164,24 @@ def evalue(expr):
 
             match res:
                 case '@select':
-                    return SPJRUD.Select(findCondition(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Select(findCondition(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
                 case '@project':
-                    return SPJRUD.Project(findAttributes(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Project(findAttributes(expr.toFinal()), evalue(findSubRequest(expr.toFinal())))
                 case '@join':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Join(evalue(left), evalue(right))
+                    expression = SPJRUD.Join(evalue(left), evalue(right))
                 case '@rename':
                     old, new = findStrings(expr.toFinal())
-                    return SPJRUD.Rename(old, new, evalue(findSubRequest(expr.toFinal())))
+                    expression = SPJRUD.Rename(old, new, evalue(findSubRequest(expr.toFinal())))
                 case '@union':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Union(evalue(left), evalue(right))
+                    expression = SPJRUD.Union(evalue(left), evalue(right))
                 case '@diff':
                     left, right = findSplit(expr.toFinal())
-                    return SPJRUD.Difference(evalue(left), evalue(right))
+                    expression = SPJRUD.Difference(evalue(left), evalue(right))
                 case _:
                     raise e.CommandError(res)
+            return expression
         else:
             res += currentChar
             currentChar = next(expr)
@@ -190,27 +189,67 @@ def evalue(expr):
 
 if __name__ == '__main__':
 
+    with Bdd.Bdd() as db:
+        for i in db.getTables():
+            if 'temp' in i:
+                db.dropTable(i)
+            if 'table3' in i:
+                db.dropTable(i)
+
     indicator = 'sqf >> '
     entry = input(indicator)
 
     while entry != '@exit':
-        try:
-            if entry == '':
-                pass
-            elif len(entry.split()) != 0 and entry.split()[0] == '@use':
-                if len(entry.split()) == 2:
-                    indicator = f'sqf[{entry.split()[1]}] >> '
-                else:
-                    raise ValueError(f'\033[93m [E] : ArgumentError : Nom de la table manquant\033[97m')
-            else:
-                print(evalue(s.String(entry)))
-                """
-                validation()
-                if true :
-                    with Bdd() as db:
-                        execute
-                enregistrer ?
-                """
-        except Exception as o:
-                print(o)
+        if entry == '':
+            pass
+        elif entry == '@print':
+            with Bdd.Bdd() as db:
+                print(db)
+        else:
+            try:
+                obj = evalue(s.String(entry))
+                print('To SPJRUD :', obj)
+                schema = obj.validate()
+
+                with Bdd.Bdd() as bd:
+                    a = obj.toSQL()
+                    print('To sql :', a)
+                    res = bd.execute(a)
+                    print(res)
+                    attributs = '('
+                    values = ''
+                    while True:
+                        choice = input('Voulez-vous enregistrer ? Y-N : ').strip()
+                        if choice.upper() == 'Y':
+                            name = input('Quel nom voulez-vous donner à la table : ')
+                            for index in range(len(schema)-1):
+                                attributs += f'{schema[index][0]} {schema[index][1]}, '
+                            attributs += f'{schema[-1][0]} {schema[-1][1]})'
+                            print(attributs)
+                            bd.createTable(name, attributs)
+                            
+                            for values in res:
+                                insertion = '('
+                                for column in range(len(values)-1):
+                                    if schema[column][1] == 'TEXT':
+                                        insertion += f'"{values[column]}", '
+                                    else:
+                                        insertion += f'{values[column]}, '
+                                if schema[-1][1] == 'TEXT':
+                                    insertion += f'"{values[-1]}")'
+                                else:
+                                    insertion += f'{values[-1]})'
+                                print(insertion)
+                                bd.insert(name, insertion)
+                            for copieTable in Attr.allCopies:
+                                bd.dropTable(copieTable)
+                            break
+                        elif choice.upper() == 'N':
+                            for i in Attr.allCopies:
+                                bd.dropTable(i)
+                            break
+                        else:
+                            continue
+            except Exception as o:
+                print(o.with_traceback())
         entry = input(indicator)
