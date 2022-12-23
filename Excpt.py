@@ -60,28 +60,26 @@ class InitError(Exception):
 
         return f'\033[93m [E] : InitError : {self.msg} \033[97m'
 
-class ValidationError(Exception):
+class InvalidExpressionError(Exception):
 
-    def __init__(self, msg):
+    def __init__(self, totalExpr, expr1, schema1, expr2, schema2):
 
-        self.msg = msg
+        self.totalExpr = totalExpr
+        self.expr1 = expr1
+        self.schema1 = schema1
+        self.expr2 = expr2
+        self.schema2 = schema2
 
     def __str__(self):
 
-        return f'\033[93m [E] : Validation Error : {self.msg} \033[97m'
+        return f'\033[93m [E] : Invalid expression, the expression :\n       {self.totalExpr}\n       is invalid because the schema of\n       {self.expr1} which is {self.schema1}\n       is not the same as the one from : {self.expr2}\n       which is {self.schema2} \033[97m'
 
-class AttributeNameError(ValidationError):
+class AttributeNameError(Exception):
 
-    def __init__(self, msg):
-        super().__init__(msg)
+    def __init__(self, totalExpr, attr, schema):
+        self.totalExpr = totalExpr
+        self.attr = attr
+        self.schema = schema
     
     def __str__(self):
-        return super().__str__()
-
-class AttributeTypeError(ValidationError):
-
-    def __init__(self, msg):
-        super().__init__(msg)
-    
-    def __str__(self):
-        return super().__str__()
+        return f'\033[93m [E] : Invalid expression, the expression :\n       {self.totalExpr}\n       is invalid because the attribute {self.attr}\n       is not in the schema : {self.schema}'
