@@ -56,7 +56,7 @@ class Project(Expr.Expr):
         res = []
         for attr in self.listOfAttr:
             if attr not in reduceSchema:
-                raise e.AttributeNameError('j')
+                raise e.AttributeNameError(f'@project({self.listOfAttr})({self.expr})', attr, exprSchema)
             else:
                 res.append(exprSchema[reduceSchema.index(attr)])
         return res
@@ -93,7 +93,7 @@ class Join(Expr.Expr):
                 exprSchema2.remove(attribut)
 
         if len(commonAttributes) == 0:
-            raise e.ValidationError(f"{self.expr1} isn't compatible with {self.expr2}")
+            raise e.InvalidExpressionError(f'@join({self.expr1}, {self.expr2}', self.expr1, exprSchema1, self.expr2, exprSchema2)
 
         else:
             return exprSchema1 + exprSchema2
@@ -124,19 +124,31 @@ class Rename(Expr.Expr):
     def validate(self):
 
         exprSchema = self.expr.validate()
-        reduceSchema = [i[0] for i in exprSchema]
+        self.reduceSchema = [i[0] for i in exprSchema]
         
-        if not str(self.oldName) in reduceSchema:
-            raise e.AttributeNameError('j')
+        print(self.oldName)
+        if not str(self.oldName) in self.reduceSchema:
+            raise e.AttributeNameError(f'@rename({self.oldName}:{self.newName})({self.expr})', self.oldName, exprSchema)
         
-        index = reduceSchema.index(str(self.oldName))
+        index = self.reduceSchema.index(str(self.oldName))
         exprSchema[index] = (self.newName, exprSchema[index][1])
 
         return exprSchema
 
     def toSQL(self):
 
-        return f'SELECT * FROM ({self.expr.toSQL()}) AS {self.newName}'
+        attributs = ''
+        for index in range(len(self.reduceSchema)-1):
+            if self.reduceSchema[index] == self.oldName:
+                attributs += f'{self.oldName} AS {self.newName}, '
+            else:
+                attributs += f'{self.reduceSchema[index]}, '
+        if self.reduceSchema[-1] == self.oldName:
+                attributs += f'{self.oldName} AS {self.newName}'
+        else:
+            attributs += f'{self.reduceSchema[-1]}'
+
+        return f'SELECT {attributs} FROM ({self.expr.toSQL()})'
 
 class Union(Expr.Expr):
     """
@@ -161,7 +173,7 @@ class Union(Expr.Expr):
         exprSchema2 = self.expr2.validate()
 
         if exprSchema1 != exprSchema2:
-            raise e.AttributeNameError('j')
+            raise e.InvalidExpressionError(f'@union({self.expr1}, {self.expr2}', self.expr1, exprSchema1, self.expr2, exprSchema2)
         
         return exprSchema1
 
@@ -192,7 +204,7 @@ class Difference(Expr.Expr):
         exprSchema2 = self.expr2.validate()
 
         if exprSchema1 != exprSchema2:
-            raise e.AttributeNameError('j')
+            raise e.InvalidExpressionError(f'@diff({self.expr1}, {self.expr2}', self.expr1, exprSchema1, self.expr2, exprSchema2)
         
         return exprSchema1
 

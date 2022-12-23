@@ -127,7 +127,7 @@ if __name__ == '__main__':
         print(db.insert('STUDENT', '(5, 18, "André")'))
         print(db.insert('STUDENT', '(6, 18, "Adrien")'))
 
-        print(db.createTable('COURSELIST', '(ID_ARTICLE INT, PRIX INT, ACHTEUR TEXT)'))
+        print(db.createTable('COURSELIST', '(ID_ARTICLE INT, PRIX INT, ACHETEUR TEXT)'))
         print(db.insert('COURSELIST', '(1, 13, "Patrick")'))
         print(db.insert('COURSELIST', '(2, 15, "Hervé")'))
         print(db.insert('COURSELIST', '(3, 17, "Stéphane")'))
