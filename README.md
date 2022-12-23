@@ -1,6 +1,7 @@
-# Projet Base de données I
+# Projet Base de données I : Compilation SPJRUD vers SQL
+L’objectif de ce projet est d’implémenter, en Python, un outil de compilation(traduction) de requêtes SPJRUD vers des requêtes SQL
 
-link : https://github.com/jeanbfly/sqfBDD
+Le projet est implémenté en Python, une version minimale de `python 3.10` est requise pour garantir la bonne exécution du programme.
 
 ## 1) Tutoriel :
 
@@ -12,6 +13,7 @@ Au lancement de l'application, une interface de commande vous propose de rentrer
 ### 1.1) Commande de type Control :
 
 - `@exit` permet de quitter l'application
+- `@print` permet d'afficher toutes les tables de la base de données
 - `@use $tableName` permet de sélectionner la table `$tableName`
 
 ### 1.2) Commande de type SPJRUD :
@@ -23,12 +25,15 @@ Au lancement de l'application, une interface de commande vous propose de rentrer
 - `@union($Rel1, $Rel2)` commande union avec `$Rel1, $Rel2` deux relations/ sous-requêtes à unir.
 - `@diff($Rel1, $Rel2)` commande difference avec `$Rel1, $Rel2` deux relations/ sous-requêtes à soustraire.
 
-### 1.3) Autres:
+### 1.3) La Gestion d'erreurs 
 
-Un système d'erreurs est prévu pour vous prévenir d'une erreur de syntaxe. 
-Un système de TraceBack est prévu pour les erreurs lors de l'éxécution de la requête.
-Enfin, à la fin d'une commande, vous avez la possibilié de sauvegarder le résultat
-dans une nouvelle table.
+Le projet bénéficie d'une gestion d'erreurs en deux étapes.
+Dans un premier temps l'interpréteur vérifie les commandes entrées et leur synthaxe, ainsi si une l'utilisateur introduit une mauvaise commande, le programme lui signifie et ne commence pas la traduction de la commande.
+
+Ensuite, le programme valide sémantiquement les expression rentrées par l'utilisateur. Cette validation permet d'assurer que la commande requête SQL résultante sera correcte et pourra être utilisée et envoyée à un système de base de données. 
+
+Les deux type d'erreurs renvoient un message détaillant où le problème est survenu en donnant des détails utiles à la correction de la commande erronée entrée.
+
 
 ## 2) Structure :
 
@@ -37,7 +42,7 @@ implémentation.
 
 ### 2.1) SPJRUD :
 
-les différentes opérations sont représentée chacune par une classe dans le fichier __SPJRUD.py__. Elles implémentent
+Les différentes opérations sont représentée chacune par une classe dans le fichier __SPJRUD.py__. Elles implémentent
 un __constructeur__ qui vérifie la congruence des arguments, une méthode spéciale __str__
 pour formater l'opération en String et une méthode __toSQL__ permettant de traduire la
 commande en requête SQL. Cette dernière appel récursivement la méthode toSQL pour toutes
