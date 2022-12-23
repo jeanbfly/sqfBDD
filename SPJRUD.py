@@ -136,7 +136,7 @@ class Rename(Expr.Expr):
 
     def toSQL(self):
 
-        return f'ALTER TABLE ({self.expr.toSQL()}) RENAME COLUMN {str(self.oldName)} TO {str(self.newName)}'
+        return f'SELECT * FROM ({self.expr.toSQL()}) AS {self.newName}'
 
 class Union(Expr.Expr):
     """
