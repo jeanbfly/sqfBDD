@@ -251,5 +251,5 @@ if __name__ == '__main__':
                         else:
                             continue
             except Exception as o:
-                print(o.with_traceback())
+                print(o)
         entry = input(indicator)

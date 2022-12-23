@@ -5,6 +5,7 @@ import Excpt as e
 class Select(Expr.Expr):
     """
         Class representing the Select command
+        usage     :  @select{$condition}($expr)
         condition -- a condition object
         expr      -- a subRequest/relation, expression object
     """
@@ -28,6 +29,7 @@ class Select(Expr.Expr):
 class Project(Expr.Expr):
     """
         Class representing the Project command
+        usage     :  @project{$listOfAttr}($expr)
         condition -- a list of Attributes object
         expr      -- a subRequest/relation, expression object
     """
@@ -54,7 +56,7 @@ class Project(Expr.Expr):
         res = []
         for attr in self.listOfAttr:
             if attr not in reduceSchema:
-                raise e.ValidationError(f'Tous les attributs doivent être présents dans la relation\n\t{attr} introuvable dans {self.expr}')
+                raise e.ValidationError(f'Tous les attributs doivent être présents dans la relation\n\t{attr} introuvable dans :\n\t{self.expr} = {exprSchema}')
             else:
                 res.append(exprSchema[reduceSchema.index(attr)])
         return res
@@ -66,6 +68,7 @@ class Project(Expr.Expr):
 class Join(Expr.Expr):
     """
         Class representing the Join command
+        usage        :  @join{$rel1, $rel2}
         expr1, expr2 -- two subRequests/relations, expression object
     """
     def __init__(self, expr1, expr2):
@@ -91,7 +94,7 @@ class Join(Expr.Expr):
                 exprSchema2.remove(attribut)
 
         if len(commonAttributes) == 0:
-            raise e.ValidationError(f"{self.expr1} n'est pas compatible avec {self.expr2}\n\tAucun attribut commun")
+            raise e.ValidationError(f"{self.expr1} n'est pas compatible avec {self.expr2}\n\tAucun attribut commun\n\t{exprSchema1} ∩ {exprSchema2} = ∅")
 
         else:
             return exprSchema1 + exprSchema2
@@ -103,6 +106,7 @@ class Join(Expr.Expr):
 class Rename(Expr.Expr):
     """
         Class representing the Rename command
+        usage   :  @rename{$oldName:$newName}($expr)
         oldName -- the old name of the column
         newName -- the new name of the column
     """
@@ -125,7 +129,7 @@ class Rename(Expr.Expr):
         reduceSchema = [i[0] for i in exprSchema]
         
         if not str(self.oldName) in reduceSchema:
-            raise e.AttributeNameError(f'{self.oldName} ne peut être renommé en {self.newName}\n\t{self.oldName} n\'existe pas dans {self.expr}')
+            raise e.AttributeNameError(f'{self.oldName} ne peut être renommé en {self.newName}\n\t{self.oldName} n\'existe pas dans {self.expr}\n\t{exprSchema}')
         
         index = reduceSchema.index(str(self.oldName))
         exprSchema[index] = (self.newName, exprSchema[index][1])
@@ -134,11 +138,12 @@ class Rename(Expr.Expr):
 
     def toSQL(self):
 
-        return f'ALTER TABLE ({self.expr.toSQL()}) RENAME COLUMN {str(self.oldName)} TO {str(self.newName)}'
+        return f'ALTER TABLE {self.expr.toSQL()} RENAME COLUMN {str(self.oldName)} TO {str(self.newName)}'
 
 class Union(Expr.Expr):
     """
         Class representing the Union command
+        usage        :  @union{$rel1, $rel2}
         expr1, expr2 -- two subRequests/relations, expression object
     """
     def __init__(self, expr1, expr2):
@@ -159,7 +164,7 @@ class Union(Expr.Expr):
         exprSchema2 = self.expr2.validate()
 
         if exprSchema1 != exprSchema2:
-            raise e.AttributeNameError(f'Les deux relations ne sont pas compatibles\n\t{self.expr1} n\'a pas le même schéma que {self.expr2}')
+            raise e.AttributeNameError(f'Les deux relations ne sont pas compatibles\n\t{self.expr1} n\'a pas le même schéma que {self.expr2}\n\t{exprSchema1} != {exprSchema2}')
         
         return exprSchema1
 
@@ -170,6 +175,7 @@ class Union(Expr.Expr):
 class Difference(Expr.Expr):
     """
         Class representing the Union command
+        usage        :  @difference{$rel1, $rel2}
         expr1, expr2 -- two subRequests/relations, expression object
     """
     def __init__(self, expr1, expr2):
@@ -190,7 +196,7 @@ class Difference(Expr.Expr):
         exprSchema2 = self.expr2.validate()
 
         if exprSchema1 != exprSchema2:
-            raise e.AttributeNameError(f'Les deux relations ne sont pas compatibles\n\t{self.expr1} n\'a pas le même schéma que {self.expr2}')
+            raise e.AttributeNameError(f'Les deux relations ne sont pas compatibles\n\t{self.expr1} n\'a pas le même schéma que {self.expr2}\n\t{exprSchema1} != {exprSchema2}')
         
         return exprSchema1
 
