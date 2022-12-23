@@ -126,7 +126,6 @@ class Rename(Expr.Expr):
         exprSchema = self.expr.validate()
         self.reduceSchema = [i[0] for i in exprSchema]
         
-        print(self.oldName)
         if not str(self.oldName) in self.reduceSchema:
             raise e.AttributeNameError(f'@rename({self.oldName}:{self.newName})({self.expr})', self.oldName, exprSchema)
         

@@ -193,8 +193,6 @@ if __name__ == '__main__':
         for i in db.getTables():
             if 'temp' in i:
                 db.dropTable(i)
-            if 'table3' in i:
-                db.dropTable(i)
 
     indicator = 'sqf >> '
     entry = input(indicator)
@@ -215,7 +213,6 @@ if __name__ == '__main__':
                     a = obj.toSQL()
                     print('To sql :', a)
                     res = bd.execute(a)
-                    print(res)
                     attributs = '('
                     values = ''
                     while True:
@@ -225,7 +222,6 @@ if __name__ == '__main__':
                             for index in range(len(schema)-1):
                                 attributs += f'{schema[index][0]} {schema[index][1]}, '
                             attributs += f'{schema[-1][0]} {schema[-1][1]})'
-                            print(attributs)
                             bd.createTable(name, attributs)
                             
                             for values in res:
@@ -239,7 +235,6 @@ if __name__ == '__main__':
                                     insertion += f'"{values[-1]}")'
                                 else:
                                     insertion += f'{values[-1]})'
-                                print(insertion)
                                 bd.insert(name, insertion)
                             for copieTable in Attr.allCopies:
                                 bd.dropTable(copieTable)
@@ -251,5 +246,5 @@ if __name__ == '__main__':
                         else:
                             continue
             except Exception as o:
-                print(o.with_traceback())
+                print(o)
         entry = input(indicator)
